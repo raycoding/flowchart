@@ -1,0 +1,105 @@
+= FlowChart
+
+== INSTALL
+
+  gem install flowchart
+
+== Sample Use
+
+  # Example of a Non-ActiveRecord Class using FlowChart in Ruby
+  # in irb console
+
+  class SampleOne
+    include FlowChart
+    attr_accessor :process_status
+
+    flowchart do
+      init_flowstate :init
+
+      flowstate :init do
+        preprocess Proc.new { |o| p "Initializing File" }
+        postprocess :notify_user
+      end
+
+      flowstate :uploaded do
+        preprocess Proc.new  { |o| p "Validating File" }
+        postprocess Proc.new  { |o| p "File has been uploaded in system" }
+      end
+
+      flowstate :open do
+        postprocess :notify_user
+        postprocess Proc.new  { |o| p "File has been closed" }
+      end
+
+      flowstate :closed do
+        preprocess Proc.new  { |o| p "File closed" }
+        postprocess :notify_user
+      end
+
+      action :upload do
+        transitions :from => :init, :to => :uploaded, :condition => :file_parsable?
+      end
+
+      action :process do
+        transitions :from => :uploaded, :to => [:open, :closed], :branch => :choose_branch
+      end
+
+      action :close do
+        transitions :from => [:init,:uploaded,:open], :to => :closed, :condition => :file_close?
+      end
+
+    end
+
+    def choose_branch
+      6 > 5 ? :open : :closed
+    end
+
+    def notify_user
+      p "Notifying User!"
+    end
+
+    def file_parsable?
+      3 > 2 ? true : false
+    end
+
+    def file_close?
+      1 > 0 ? true : false 
+    end
+  end
+
+  t=SampleOne.new
+    #<SampleOne:0x9a3d500>
+
+  t.current_state
+    #<FlowChart::State:0x9a3ff1c @flowstatename=:init, @before_and_after_works={:preprocess=>#<Proc:0x09a41880@(irb):11>, :postprocess=>:notify_user}>
+
+  t.upload
+    "Notifying User!"
+    "Validating File"
+    true
+
+  t.current_state
+    #<FlowChart::State:0x9a3fe18 @flowstatename=:uploaded, @before_and_after_works={:preprocess=>#<Proc:0x09a415ec@(irb):16>, :postprocess=>#<Proc:0x09a414c0@(irb):17>}>
+
+  t.process
+    "File has been uploaded in system"
+
+  t.current_state
+    #<FlowChart::State:0x9a3fd00 @flowstatename=:open, @before_and_after_works={:postprocess=>#<Proc:0x09a41240@(irb):22>}>
+
+  t.closed?
+    false
+
+  t.open?
+    true
+
+  t.close
+    "File closed"
+    true
+
+  t.current_state
+     #<FlowChart::State:0x9a3fbfc @flowstatename=:closed, @before_and_after_works={:preprocess=>#<Proc:0x09a41024@(irb):26>, :postprocess=>:notify_user}>
+
+== Save! in ActiveRecord Model
+
+For any action if you choose to follow it up with a '!' then the model object is saved after action call. Similarly for an action if you choose to not follow it up with a '!' it will only update the attributes for the model object
