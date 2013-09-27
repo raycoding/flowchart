@@ -1,8 +1,61 @@
 = FlowChart
+  
+  - Flowchart is a rubygem for State Machine(state-action-transition) workflow.
+  - Flowchart works out of the box both for ActiveRecord and Non-ActiveRecord Models.
+  - It provides an easy DSL to create a state machine flow for your model's object.
 
-== INSTALL
+== INSTALLATION
 
   gem install flowchart
+
+  # No other gem dependencies! Tested on Ruby 1.8.7 and Ruby 1.9.3
+
+== SYNTAX & OPTIONS
+
+  flowchart do
+    init_flowstate :init
+
+    flowstate :init do
+      preprocess Proc.new { |o| p "blah blah" }
+      postprocess :some_method
+    end
+
+    flowstate :uploaded do
+        preprocess Proc.new  :do_something
+        postprocess Proc.new  { |o| p "File has been uploaded" }
+    end
+
+    action :upload do
+      transitions :from => :init, :to => :uploaded, :condition => :file_parsable?
+    end
+  end
+
+  # OPTIONS
+    1. By Default flowchart assumes that the model attribute it works on is "process_status. If you want to override it then :
+    flowchart do
+      state_column :some_other_column
+      .....
+    end
+
+    2. Every flowstate can have options preprocess and postprocess blocks. You can mention any instance methods or Procs/lamdas to execute.
+
+    3. In Actions you can mention :condition with evaluate truth or falsity based on which the transition action(:from -> :to) is possible or not is determined. If :condition is not given transition is always evaluated to truth.
+
+    4. In Actions you can also mention :branch, when you have multiple :to states from one single :from state then you can mention a ":branch" condition which you can execute and determine which branch state will be the next! Useful in decision trees.
+
+  # Methods
+
+    1. obj.{state_name}? returns boolean true/false if object is in that that state
+
+    2. obj.{action} returns the transtion to next state on executing the action
+
+    3. obj.{action}! returns the transition to next state on executing the action and save after call
+
+    4. obj.current_state returns the current_state of the object
+
+    5. obj.flowprocessor returns the complete tree of flowchart for the object!
+
+
 
 == Sample Use
 

@@ -8,6 +8,6 @@ Gem::Specification.new do |f|
   f.email         = 'rayshuddhashil@gmail.com '
   f.files         = ["README.rdoc","LICENSE.txt","flowchart.gemspec","lib/flow_chart.rb","lib/flowchart/flow_processor.rb","sample/sample_one.rb"]
   f.require_paths = ["lib"]
-  f.homepage      = 'http://rubygems.org/gems/flowchart'
+  f.homepage      = 'http://github.com/raycoding/flowchart'
   f.license       = 'MIT'
 end
