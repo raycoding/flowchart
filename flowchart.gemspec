@@ -1,6 +1,6 @@
 Gem::Specification.new do |f|
   f.name          = 'flowchart'
-  f.version       = '1.0.0'
+  f.version       = '1.0.1'
   f.date          = %q{2013-09-27}
   f.summary       = %q{State Flow and Work Flow Process gem in Ruby}
   f.description   = %q{Flowchart is a StateFlow(states-actions-transitions) and WorkFlow(users-assigned-assigners) process design for Non-ActiveRecord and ActiveRecord Model in Ruby or Rails}
